@@ -15,8 +15,45 @@ include(cmake/Utils.cmake)
 include(cmake/Targets.cmake)
 
 # ---[ find dependencies
-find_package(OpenCV 2.4.8 REQUIRED COMPONENTS core viz highgui)
+find_package( OpenCV 2.4.8 REQUIRED COMPONENTS core viz highgui HINTS "$ENV{USERPROFILE}/Documents/GitHub/BUILDS/OpenCV" "C:/Users/Public/Documents/opencv/build") 
+	
+string(REGEX REPLACE "/Release/Release" "/Release" OpenCV_LIB_DIR_OPT "${OpenCV_LIB_DIR_OPT}")
+string(REGEX REPLACE "/Debug/Debug" "/Debug" OpenCV_LIB_DIR_DBG "${OpenCV_LIB_DIR_DBG}")
+
+IF(OpenCV_FOUND AND ("${OpenCV_DIR}" STREQUAL "${OpenCV_CONFIG_PATH}") AND (NOT("${OpenCV_LIB_DIR_DBG}" STREQUAL "/Debug")) AND (NOT("${OpenCV_LIB_DIR_OPT}" STREQUAL "/Release")) )
+	message(STATUS "OpenCV Found!")
+	string(REGEX REPLACE "/lib" "/bin" OpenCV_BIN_DIR_OPT "${OpenCV_LIB_DIR_OPT}")
+	string(REGEX REPLACE "/lib" "/bin" OpenCV_BIN_DIR_DBG "${OpenCV_LIB_DIR_DBG}")
+ELSEIF(EXISTS "${OpenCV_DIR}/")
+	message(WARNING "OpenCV not entirely found, but directory address <OpenCV_DIR> located and so assuming local build at ${OpenCV_DIR}")
+	
+	IF( (NOT EXISTS "${OpenCV_DIR}/lib/Debug/") AND (NOT EXISTS "${OpenCV_DIR}/lib/Release/") )
+		MESSAGE(FATAL_ERROR "Provided path for OpenCV does not appear to contain valid debug OR release libraries!")
+	ENDIF()
+	
+	SET(OpenCV_LIB_DIR_OPT "${OpenCV_DIR}/lib/Release" CACHE STRING "..." FORCE)
+	SET(OpenCV_LIB_DIR_DBG "${OpenCV_DIR}/lib/Debug" CACHE STRING "..." FORCE)
+	SET(OpenCV_3RDPARTY_LIB_DIR_OPT "${OpenCV_DIR}/lib/Release" CACHE STRING "..." FORCE)
+	SET(OpenCV_3RDPARTY_LIB_DIR_DBG "${OpenCV_DIR}/lib/Debug" CACHE STRING "..." FORCE)
+	
+	LIST(APPEND _OpenCV_LIB_PATH "${OpenCV_DIR}/bin/Debug")
+	LIST(APPEND _OpenCV_LIB_PATH "${OpenCV_DIR}/bin/Release")
+	
+	SET(OPENCV_FOUND TRUE CACHE BOOL "..." FORCE)
+	SET(OpenCV_FOUND TRUE CACHE BOOL "..." FORCE)
+	
+	SET(OpenCV_BIN_DIR_OPT "${OpenCV_DIR}/bin/Release")
+	SET(OpenCV_BIN_DIR_DBG "${OpenCV_DIR}/bin/Debug")
+	SET(OpenCV_CONFIG_PATH "${OpenCV_DIR}" CACHE STRING "..." FORCE)
+ELSE()
+	MESSAGE(FATAL_ERROR "OpenCV not found! Please set the <OpenCV_DIR> variable to the OpenCV build directory.")
+ENDIF()
+
 find_package(CUDA 5.0 REQUIRED)
+
+SET(OPENNI2_LIBRARY "C:/Program Files/OpenNI2/Lib/OpenNI2.lib" CACHE STRING "..." FORCE)
+SET(OPENNI2_INCLUDE_DIRS "C:/Program Files/OpenNI2/Include/" CACHE STRING "..." FORCE)
+
 find_package(OpenNI2 REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS} ${CUDA_INCLUDE_DIRS} ${OPENNI2_INCLUDE_DIRS})
 
