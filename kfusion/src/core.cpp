@@ -1,7 +1,9 @@
 #include <kfusion/kinfu.hpp>
 #include "safe_call.hpp"
 
+#ifdef _OPENCV_VERSION_3_PLUS_
 #include <opencv2/core/utility.hpp>
+#endif
 
 #include <cuda.h>
 #include <cstdio>

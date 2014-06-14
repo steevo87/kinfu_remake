@@ -15,7 +15,7 @@ include(cmake/Utils.cmake)
 include(cmake/Targets.cmake)
 
 # ---[ find dependencies
-find_package( OpenCV 2.4.8 REQUIRED COMPONENTS core viz highgui HINTS "$ENV{USERPROFILE}/Documents/GitHub/BUILDS/OpenCV" "C:/Users/Public/Documents/opencv/build") 
+find_package( OpenCV 2.4.8 REQUIRED COMPONENTS core viz highgui HINTS "$ENV{USERPROFILE}/Documents/GitHub/BUILDS/OpenCV" "C:/Users/Public/Documents/opencv/build" REQUIRED) 
 	
 string(REGEX REPLACE "/Release/Release" "/Release" OpenCV_LIB_DIR_OPT "${OpenCV_LIB_DIR_OPT}")
 string(REGEX REPLACE "/Debug/Debug" "/Debug" OpenCV_LIB_DIR_DBG "${OpenCV_LIB_DIR_DBG}")
@@ -49,10 +49,20 @@ ELSE()
 	MESSAGE(FATAL_ERROR "OpenCV not found! Please set the <OpenCV_DIR> variable to the OpenCV build directory.")
 ENDIF()
 
+IF(OpenCV_FOUND)
+	include_directories(${OpenCV_INCLUDE_DIRS})
+	link_directories(${_OpenCV_LIB_PATH})
+	STRING(REGEX REPLACE "\\." "" OPENCV_VER "${OpenCV_VERSION}")
+ENDIF()
+
 find_package(CUDA 5.0 REQUIRED)
 
 SET(OPENNI2_LIBRARY "C:/Program Files/OpenNI2/Lib/OpenNI2.lib" CACHE STRING "..." FORCE)
 SET(OPENNI2_INCLUDE_DIRS "C:/Program Files/OpenNI2/Include/" CACHE STRING "..." FORCE)
+
+STRING(REGEX REPLACE "Lib" "Redist" OPENNI2_REDIST "${OPENNI2_LIBRARY}")
+STRING(REGEX REPLACE "/OpenNI2.lib" "" OPENNI2_REDIST "${OPENNI2_REDIST}")
+MESSAGE(STATUS "OPENNI2_REDIST = ${OPENNI2_REDIST}")
 
 find_package(OpenNI2 REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS} ${CUDA_INCLUDE_DIRS} ${OPENNI2_INCLUDE_DIRS})
