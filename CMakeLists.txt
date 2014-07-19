@@ -49,10 +49,16 @@ ELSE()
 	MESSAGE(FATAL_ERROR "OpenCV not found! Please set the <OpenCV_DIR> variable to the OpenCV build directory.")
 ENDIF()
 
+SET(GENERIC_COMPILE_FLAGS "")
 IF(OpenCV_FOUND)
 	include_directories(${OpenCV_INCLUDE_DIRS})
 	link_directories(${_OpenCV_LIB_PATH})
 	STRING(REGEX REPLACE "\\." "" OPENCV_VER "${OpenCV_VERSION}")
+	
+	MESSAGE(STATUS "OpenCV_VERSION_MAJOR = ${OpenCV_VERSION_MAJOR}")
+	IF (OpenCV_VERSION_MAJOR GREATER 2)
+		SET(GENERIC_COMPILE_FLAGS "${GENERIC_COMPILE_FLAGS} -D_OPENCV_VERSION_3_PLUS_")
+	ENDIF()
 ENDIF()
 
 find_package(CUDA 5.0 REQUIRED)
