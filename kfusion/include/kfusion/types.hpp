@@ -2,7 +2,10 @@
 
 #include <kfusion/cuda/device_array.hpp>
 #include <opencv2/core/core.hpp>
+
+#ifndef _OPENCV_VERSION_3_PLUS_
 #include <opencv2/contrib/contrib.hpp>
+#endif
 #include <opencv2/core/affine.hpp>
 #include <opencv2/viz/vizcore.hpp>
 #include <iosfwd>

@@ -15,7 +15,7 @@ include(cmake/Utils.cmake)
 include(cmake/Targets.cmake)
 
 # ---[ find dependencies
-find_package( OpenCV 2.4.8 REQUIRED COMPONENTS core viz highgui HINTS "$ENV{USERPROFILE}/Documents/opencv/build" "C:/Users/Public/Documents/opencv/build" "$ENV{USERPROFILE}/Documents/GitHub/BUILDS/OpenCV") 
+find_package( OpenCV 2.4.8 REQUIRED COMPONENTS core viz highgui HINTS "$ENV{USERPROFILE}/Documents/GitHub/BUILDS/OpenCV" "$ENV{USERPROFILE}/Documents/opencv/build" "C:/Users/Public/Documents/opencv/build") 
 	
 string(REGEX REPLACE "/Release/Release" "/Release" OpenCV_LIB_DIR_OPT "${OpenCV_LIB_DIR_OPT}")
 string(REGEX REPLACE "/Debug/Debug" "/Debug" OpenCV_LIB_DIR_DBG "${OpenCV_LIB_DIR_DBG}")
@@ -53,6 +53,9 @@ IF(OpenCV_FOUND)
 	include_directories(${OpenCV_INCLUDE_DIRS})
 	link_directories(${_OpenCV_LIB_PATH})
 	STRING(REGEX REPLACE "\\." "" OPENCV_VER "${OpenCV_VERSION}")
+	IF (OpenCV_VERSION_MAJOR GREATER 2)
+		add_definitions(-D_OPENCV_VERSION_3_PLUS_)
+	ENDIF()
 ENDIF()
 
 find_package(CUDA 5.0 REQUIRED)
